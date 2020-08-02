@@ -1,7 +1,6 @@
 from tkinter import *
-import bcrypt
+from cryptography.fernet import Fernet
 import getpass
-
 
 
 mainframe = Tk()
@@ -27,13 +26,19 @@ userdata_path = "C:/Users/" + getpass.getuser() + "/AppData/Local/Temp/mym-user_
 
 
 def login():
-    PASSWORD = "budzi"
-    password_HASH = bcrypt.hashpw(password_entry.get(), bcrypt.gensalt())
+    file = open("key.key", "rb")
+    key = file.read()
+    file.close()
 
-    if bcrypt.checkpw(PASSWORD, password_HASH):
-        print("sucess")
-    else:
-        print("denied")
+    with open("fixkosten.txt", "rb") as f:
+        data = f.read()
+
+    fernet = Fernet(key)
+    encrypted = fernet.decrypt(data)
+
+    decoded = encrypted.decode()
+    split = decoded.split("\n")
+    print(split)
 
 
 Label(mainframe, text="Login - MYM", font=headline, bg=backgroundcolor, fg=foregroundcolor).place(x=153, y=40)
@@ -81,5 +86,6 @@ def titlebar_login():
 
 def login_success():
     print("login success")
+
 
 mainframe.mainloop()
